@@ -6,7 +6,7 @@ Simulates user interactions on an e-commerce platform.
 import json
 import time
 import random
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Dict, Any
 from confluent_kafka import Producer
 import yaml
@@ -56,7 +56,7 @@ class EcommerceProducer:
             'event_id': fake.uuid4(),
             'event_type': event_type,
             'user_id': user_id,
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(UTC).isoformat(),
             'session_id': fake.uuid4()[:8],
             'device': random.choice(['mobile', 'desktop', 'tablet']),
             'ip_address': fake.ipv4()

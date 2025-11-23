@@ -6,7 +6,7 @@ Simulates multiple IoT sensors sending temperature, humidity, and pressure data 
 import json
 import time
 import random
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Dict, Any
 from confluent_kafka import Producer
 import yaml
@@ -66,7 +66,7 @@ class SensorProducer:
             'sensor_id': f'sensor_{sensor_id:03d}',
             'sensor_type': sensor_type,
             'value': round(value, 2),
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(UTC).isoformat(),
             'location': f'zone_{sensor_id % 5}',
             'anomaly': anomaly,
             'metadata': {
