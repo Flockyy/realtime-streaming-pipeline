@@ -3,34 +3,30 @@ Load Testing with Locust
 Performance and load testing for the streaming pipeline.
 """
 
-from locust import HttpUser, task, between, events
-import json
 import random
-from datetime import datetime
+
+from locust import HttpUser, between, events, task
 
 
 class StreamingAPIUser(HttpUser):
     """Simulate users interacting with the streaming API."""
-    
+
     wait_time = between(1, 3)
     host = "http://localhost:8000"
-    
+
     def on_start(self):
         """Called when a simulated user starts."""
         self.sensor_ids = [f"sensor_{i:03d}" for i in range(100)]
         self.sensor_types = ["temperature", "humidity", "pressure"]
-    
+
     @task(3)
     def get_latest_readings(self):
         """Get latest sensor readings."""
-        params = {
-            "sensor_id": random.choice(self.sensor_ids),
-            "limit": random.randint(5, 20)
-        }
-        
-        with self.client.get("/api/v1/sensors/latest", 
-                            params=params,
-                            catch_response=True) as response:
+        params = {"sensor_id": random.choice(self.sensor_ids), "limit": random.randint(5, 20)}
+
+        with self.client.get(
+            "/api/v1/sensors/latest", params=params, catch_response=True
+        ) as response:
             if response.status_code == 200:
                 data = response.json()
                 if "readings" in data:
@@ -39,17 +35,15 @@ class StreamingAPIUser(HttpUser):
                     response.failure("Invalid response format")
             else:
                 response.failure(f"Status code: {response.status_code}")
-    
+
     @task(2)
     def get_sensor_stats(self):
         """Get sensor statistics."""
-        params = {
-            "time_window_minutes": random.choice([15, 30, 60])
-        }
-        
-        with self.client.get("/api/v1/sensors/stats",
-                            params=params,
-                            catch_response=True) as response:
+        params = {"time_window_minutes": random.choice([15, 30, 60])}
+
+        with self.client.get(
+            "/api/v1/sensors/stats", params=params, catch_response=True
+        ) as response:
             if response.status_code == 200:
                 data = response.json()
                 if "total_messages" in data:
@@ -58,23 +52,20 @@ class StreamingAPIUser(HttpUser):
                     response.failure("Invalid stats response")
             else:
                 response.failure(f"Status code: {response.status_code}")
-    
+
     @task(1)
     def get_anomalies(self):
         """Get anomalous readings."""
-        params = {
-            "limit": random.randint(10, 30),
-            "sensor_type": random.choice(self.sensor_types)
-        }
-        
-        with self.client.get("/api/v1/sensors/anomalies",
-                            params=params,
-                            catch_response=True) as response:
+        params = {"limit": random.randint(10, 30), "sensor_type": random.choice(self.sensor_types)}
+
+        with self.client.get(
+            "/api/v1/sensors/anomalies", params=params, catch_response=True
+        ) as response:
             if response.status_code == 200:
                 response.success()
             else:
                 response.failure(f"Status code: {response.status_code}")
-    
+
     @task(1)
     def health_check(self):
         """Health check endpoint."""
@@ -98,7 +89,7 @@ def on_test_start(environment, **kwargs):
 @events.test_stop.add_listener
 def on_test_stop(environment, **kwargs):
     """Called when load test stops."""
-    print(f"Load test finished.")
+    print("Load test finished.")
     print(f"Total requests: {environment.stats.total.num_requests}")
     print(f"Total failures: {environment.stats.total.num_failures}")
     print(f"Average response time: {environment.stats.total.avg_response_time:.2f}ms")

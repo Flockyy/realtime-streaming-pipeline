@@ -3,17 +3,18 @@ Database models and utilities.
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, create_engine
+
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
 
 class SensorReading(Base):
     """Model for raw sensor readings."""
-    __tablename__ = 'sensor_readings'
-    
+
+    __tablename__ = "sensor_readings"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     sensor_id = Column(String(50), nullable=False, index=True)
     sensor_type = Column(String(20), nullable=False, index=True)
@@ -28,8 +29,9 @@ class SensorReading(Base):
 
 class AggregatedMetrics(Base):
     """Model for aggregated sensor metrics."""
-    __tablename__ = 'aggregated_metrics'
-    
+
+    __tablename__ = "aggregated_metrics"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     sensor_id = Column(String(50), nullable=False, index=True)
     sensor_type = Column(String(20), nullable=False, index=True)
@@ -45,8 +47,9 @@ class AggregatedMetrics(Base):
 
 class EcommerceEvent(Base):
     """Model for e-commerce events."""
-    __tablename__ = 'ecommerce_events'
-    
+
+    __tablename__ = "ecommerce_events"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     event_id = Column(String(50), unique=True, nullable=False)
     event_type = Column(String(30), nullable=False, index=True)
@@ -69,7 +72,7 @@ def create_tables(db_url: str):
     return engine
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Create tables
     db_url = "postgresql://streaming_user:streaming_pass@localhost:5432/streaming_db"
     engine = create_tables(db_url)
