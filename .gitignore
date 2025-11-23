@@ -55,3 +55,13 @@ docker-compose.override.yml
 *.db
 *.sqlite
 data/
+
+# ML Models
+ml/models/*.joblib
+
+# Logs
+*.log
+nohup.out
+
+# uv
+uv.lock

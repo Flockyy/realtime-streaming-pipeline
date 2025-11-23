@@ -1,0 +1,63 @@
+{
+  "type": "record",
+  "name": "SensorReading",
+  "namespace": "com.streaming.sensor",
+  "doc": "IoT sensor reading with metadata",
+  "fields": [
+    {
+      "name": "sensor_id",
+      "type": "string",
+      "doc": "Unique sensor identifier"
+    },
+    {
+      "name": "sensor_type",
+      "type": {
+        "type": "enum",
+        "name": "SensorType",
+        "symbols": ["temperature", "humidity", "pressure"]
+      },
+      "doc": "Type of sensor measurement"
+    },
+    {
+      "name": "value",
+      "type": "double",
+      "doc": "Measured value"
+    },
+    {
+      "name": "timestamp",
+      "type": "long",
+      "logicalType": "timestamp-millis",
+      "doc": "Measurement timestamp in milliseconds"
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "doc": "Sensor location zone"
+    },
+    {
+      "name": "anomaly",
+      "type": "boolean",
+      "default": false,
+      "doc": "Whether this reading is anomalous"
+    },
+    {
+      "name": "metadata",
+      "type": {
+        "type": "record",
+        "name": "SensorMetadata",
+        "fields": [
+          {
+            "name": "battery_level",
+            "type": "int",
+            "doc": "Battery percentage (0-100)"
+          },
+          {
+            "name": "signal_strength",
+            "type": "int",
+            "doc": "Signal strength in dBm"
+          }
+        ]
+      }
+    }
+  ]
+}

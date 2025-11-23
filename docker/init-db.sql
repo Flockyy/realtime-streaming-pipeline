@@ -72,6 +72,41 @@ GROUP BY sensor_id, sensor_type;
 
 CREATE UNIQUE INDEX idx_sensor_stats ON sensor_stats(sensor_id, sensor_type);
 
+-- Create DLQ errors table
+CREATE TABLE IF NOT EXISTS dlq_errors (
+    id SERIAL PRIMARY KEY,
+    topic VARCHAR(100) NOT NULL,
+    message_data JSONB NOT NULL,
+    error TEXT NOT NULL,
+    retry_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX idx_dlq_errors_topic ON dlq_errors(topic);
+CREATE INDEX idx_dlq_errors_created_at ON dlq_errors(created_at);
+CREATE INDEX idx_dlq_errors_resolved ON dlq_errors(resolved);
+
+-- Create alerts table
+CREATE TABLE IF NOT EXISTS alerts (
+    id SERIAL PRIMARY KEY,
+    alert_type VARCHAR(50) NOT NULL,
+    sensor_id VARCHAR(50),
+    sensor_type VARCHAR(20),
+    severity VARCHAR(20) NOT NULL,
+    message TEXT NOT NULL,
+    value FLOAT,
+    anomaly_score FLOAT,
+    timestamp TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    acknowledged BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX idx_alerts_sensor_id ON alerts(sensor_id);
+CREATE INDEX idx_alerts_timestamp ON alerts(timestamp);
+CREATE INDEX idx_alerts_severity ON alerts(severity);
+CREATE INDEX idx_alerts_acknowledged ON alerts(acknowledged);
+
 -- Grant permissions
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO streaming_user;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO streaming_user;

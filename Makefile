@@ -38,7 +38,10 @@ test:
 lint:
 	uv run flake8 . --max-line-length=100
 	uv run black --check .
-	uv run mypy .
+	uv run mypy . --ignore-missing-imports
+
+format:
+	uv run black .
 
 producer:
 	uv run python producers/sensor_producer.py &
@@ -47,3 +50,31 @@ producer:
 consumer:
 	uv run python consumers/analytics_consumer.py &
 	uv run python consumers/alert_consumer.py &
+
+ml:
+	uv run python ml/anomaly_detector.py &
+
+api:
+	uv run python api/main.py &
+
+dlq:
+	uv run python utils/dlq_handler.py &
+
+services:
+	$(MAKE) producer
+	$(MAKE) consumer
+	$(MAKE) ml
+	$(MAKE) api
+	$(MAKE) dlq
+
+load-test:
+	uv run locust -f tests/load_test.py --host=http://localhost:8000
+
+integration-test:
+	uv run pytest tests/test_integration.py -v
+
+logs:
+	docker-compose logs -f
+
+ps:
+	docker-compose ps
