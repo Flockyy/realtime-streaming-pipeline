@@ -1,0 +1,80 @@
+kafka:
+  bootstrap_servers: 
+    - localhost:9092
+  topics:
+    sensor_data: sensor-readings
+    ecommerce_events: ecommerce-events
+    financial_transactions: transactions
+    alerts: system-alerts
+  consumer_group: streaming-consumers
+  auto_offset_reset: earliest
+  enable_auto_commit: false
+
+postgres:
+  host: localhost
+  port: 5432
+  database: streaming_db
+  user: streaming_user
+  password: streaming_pass
+
+influxdb:
+  url: http://localhost:8086
+  token: my-super-secret-auth-token
+  org: streaming-org
+  bucket: metrics
+
+producers:
+  sensor:
+    enabled: true
+    interval_seconds: 1
+    num_sensors: 10
+    sensor_types:
+      - temperature
+      - humidity
+      - pressure
+  
+  ecommerce:
+    enabled: true
+    interval_seconds: 2
+    events:
+      - page_view
+      - add_to_cart
+      - purchase
+      - search
+
+consumers:
+  analytics:
+    enabled: true
+    batch_size: 100
+    batch_timeout_seconds: 5
+  
+  alerts:
+    enabled: true
+    thresholds:
+      temperature_max: 80
+      temperature_min: -20
+      humidity_max: 95
+
+processing:
+  windowing:
+    tumbling_window_seconds: 60
+    sliding_window_seconds: 300
+    hop_seconds: 60
+  
+  aggregations:
+    - type: avg
+      field: value
+    - type: max
+      field: value
+    - type: min
+      field: value
+    - type: count
+
+monitoring:
+  prometheus:
+    enabled: true
+    port: 8000
+  
+  logging:
+    level: INFO
+    format: json
