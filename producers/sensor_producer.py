@@ -6,7 +6,7 @@ Simulates multiple IoT sensors sending temperature, humidity, and pressure data 
 import json
 import random
 import time
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any
 
 import structlog
@@ -63,7 +63,7 @@ class SensorProducer:
             "sensor_id": f"sensor_{sensor_id:03d}",
             "sensor_type": sensor_type,
             "value": round(value, 2),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.utcnow().isoformat(),
             "location": f"zone_{sensor_id % 5}",
             "anomaly": anomaly,
             "metadata": {

@@ -12,10 +12,11 @@ help:
 	@echo "  make consumer    - Start all consumers"
 
 setup:
-	uv sync
+	pip install -r requirements.txt
+	cp .env.example .env
 	docker-compose up -d
 	sleep 10
-	uv run python utils/database.py
+	python utils/database.py
 
 start:
 	docker-compose up -d
@@ -33,48 +34,17 @@ clean:
 	find . -type f -name "*.pyc" -delete
 
 test:
-	uv run pytest tests/ -v --cov=.
+	pytest tests/ -v --cov=.
 
 lint:
-	uv run flake8 . --max-line-length=100
-	uv run black --check .
-	uv run mypy . --ignore-missing-imports
-
-format:
-	uv run black .
+	flake8 . --max-line-length=100
+	black --check .
+	mypy .
 
 producer:
-	uv run python producers/sensor_producer.py &
-	uv run python producers/ecommerce_producer.py &
+	python producers/sensor_producer.py &
+	python producers/ecommerce_producer.py &
 
 consumer:
-	uv run python consumers/analytics_consumer.py &
-	uv run python consumers/alert_consumer.py &
-
-ml:
-	uv run python ml/anomaly_detector.py &
-
-api:
-	uv run python api/main.py &
-
-dlq:
-	uv run python utils/dlq_handler.py &
-
-services:
-	$(MAKE) producer
-	$(MAKE) consumer
-	$(MAKE) ml
-	$(MAKE) api
-	$(MAKE) dlq
-
-load-test:
-	uv run locust -f tests/load_test.py --host=http://localhost:8000
-
-integration-test:
-	uv run pytest tests/test_integration.py -v
-
-logs:
-	docker-compose logs -f
-
-ps:
-	docker-compose ps
+	python consumers/analytics_consumer.py &
+	python consumers/alert_consumer.py &

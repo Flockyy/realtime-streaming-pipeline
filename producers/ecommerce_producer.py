@@ -6,7 +6,7 @@ Simulates user interactions on an e-commerce platform.
 import json
 import random
 import time
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any
 
 import structlog
@@ -59,7 +59,7 @@ class EcommerceProducer:
             "event_id": fake.uuid4(),
             "event_type": event_type,
             "user_id": user_id,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.utcnow().isoformat(),
             "session_id": fake.uuid4()[:8],
             "device": random.choice(["mobile", "desktop", "tablet"]),
             "ip_address": fake.ipv4(),
